@@ -103,13 +103,15 @@ def is_valid(order_obj):
         pass
     elif platform == "Algorand":
         icl = connect_to_algo(connection_type='indexer')
-        tx = icl.transaction(tx_id)
+        tx = icl.transaction(tx_id).get('transactions')
         #print("algo tx:")
         print(tx)
-        if (tx.get("amount") == order_obj.sell_amount):
-            if (tx.get("sender") == order_obj.sender_pk):
-                if (tx.get("receiver") == get_algo_keys()[1]):
-                    return(True)
+        if len(tx)>0:
+            tx=tx[0]
+            if (tx.get("amount") == order_obj.sell_amount):
+                if (tx.get("sender") == order_obj.sender_pk):
+                    if (tx.get("receiver") == get_algo_keys()[1]):
+                        return(True)
         pass
         
         
