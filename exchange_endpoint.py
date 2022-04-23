@@ -132,6 +132,7 @@ def get_algo_keys():
 
 def get_eth_keys(filename = "eth_mnemonic.txt"):
     w3 = connect_to_eth()
+    w3.eth.account.enable_unaudited_hdwallet_features()
     acct = w3.eth.account.from_mnemonic("shed blouse blur immune fat produce around million jeans lobster priority fluid")
     eth_pk = acct._address
     eth_sk = acct._private_key
