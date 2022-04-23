@@ -102,8 +102,8 @@ def is_valid(order_obj):
                     return(True)
         pass
     elif platform == "Algorand":
-        icl = connect_to_algo("indexer")
-        tx = icl.search_transaction(tx_id = tx_id)
+        #icl = connect_to_algo("indexer")
+        #tx = icl.search_transaction(tx_id = tx_id)
         print("algo tx:")
         print(tx)
         return(True)
