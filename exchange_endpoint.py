@@ -94,8 +94,8 @@ def is_valid(order_obj):
     if platform == "Ethereum":
         w3 = connect_to_eth()
         tx = w3.eth.get_transaction(tx_id)
-        print('Eth tx:')
-        print(tx)
+        #print('Eth tx:')
+        #print(tx)
         if (tx.get("value") == order_obj.sell_amount):
             if (tx.get("from") == order_obj.sender_pk):
                 if (tx.get("to") == get_eth_keys()[1]):
@@ -104,12 +104,13 @@ def is_valid(order_obj):
     elif platform == "Algorand":
         icl = connect_to_algo(connection_type='indexer')
         tx = icl.search_transactions(txid = tx_id).get("payment-transaction")
-        print("algo tx:")
-        print(tx)
+        #print("algo tx:")
+        #print(tx)
         if (tx.get("amount") == order_obj.sell_amount):
             if (tx.get("sender") == order_obj.sender_pk):
                 if (tx.get("receiver") == get_algo_keys()[1]):
                     return(True)
+        pass
         
         
 
