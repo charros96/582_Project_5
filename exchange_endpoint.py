@@ -232,7 +232,7 @@ def address():
             return jsonify( eth_pk )
         if content['platform'] == "Algorand":
             #Your code here
-            algo_sk,algo_pk = get_algo_keys
+            algo_sk,algo_pk = get_algo_keys()
             return jsonify( algo_pk )
 
 @app.route('/trade', methods=['POST'])
