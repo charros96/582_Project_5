@@ -301,10 +301,10 @@ def trade():
             g.session.add(order_obj)
             g.session.commit()
         # 3a. Check if the order is backed by a transaction equal to the sell_amount (this is new)
-            if is_valid(order_obj):
+            #if is_valid(order_obj):
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
-                fill_order(order_obj)
-                g.session.commit()
+            fill_order(order_obj)
+            g.session.commit()
         # 4. Execute the transactions
         
         # If all goes well, return jsonify(True). else return jsonify(False)
