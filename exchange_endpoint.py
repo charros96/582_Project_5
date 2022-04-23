@@ -103,12 +103,17 @@ def is_valid(order_obj):
         pass
     elif platform == "Algorand":
         icl = connect_to_algo(connection_type='indexer')
-        tx = icl.search_transactions(txid = tx_id)
+        tx = icl.search_transactions(txid = tx_id).get("payment-transaction")
         print("algo tx:")
         print(tx)
-        return(True)
+        if (tx.get("amount") == order_obj.sell_amount):
+            if (tx.get("sender") == order_obj.sender_pk):
+                if (tx.get("receiver") == get_algo_keys()[1]):
+                    return(True)
+        
+        
 
-    return(True)
+    return(False)
 
 def order_asdict(order):
     return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount, 'signature':order.signature,'counterparty_id':order.counterparty_id,'tx_id':order.tx_id}
