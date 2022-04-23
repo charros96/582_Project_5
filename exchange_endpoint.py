@@ -96,14 +96,19 @@ def is_valid(order_obj):
         tx = w3.eth.get_transaction(tx_id)
         print('Eth tx:')
         print(tx)
+        if (tx.get("value") == order_obj.sell_amount):
+            if (tx.get("from") == order_obj.sender_pk):
+                if (tx.get("to") == get_eth_keys()[1]):
+                    return(True)
         pass
     elif platform == "Algorand":
         icl = connect_to_algo("indexer")
-        tx = icl.search_transaction(tx_id)
+        tx = icl.search_transaction(tx_id = tx_id)
         print("algo tx:")
         print(tx)
+        return(True)
 
-    return(True)
+    return(False)
 
 def order_asdict(order):
     return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount, 'signature':order.signature,'counterparty_id':order.counterparty_id,'tx_id':order.tx_id}
