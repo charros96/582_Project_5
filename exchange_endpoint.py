@@ -105,7 +105,7 @@ def is_valid(order_obj):
         #icl = connect_to_algo("indexer")
         #tx = icl.search_transaction(tx_id = tx_id)
         print("algo tx:")
-        print(tx)
+        print(tx_id)
         return(True)
 
     return(False)
