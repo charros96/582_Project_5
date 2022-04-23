@@ -88,6 +88,21 @@ def connect_to_blockchains():
 """ End of pre-defined methods """
         
 """ Helper Methods (skeleton code for you to implement) """
+def is_valid(order_obj):
+    platform = order_obj.sell_currency
+    tx_id = order_obj.tx_id
+    if platform == "Ethereum":
+        w3 = connect_to_eth()
+        tx = w3.eth.get_transaction(tx_id)
+        print(tx)
+        pass
+    elif platform == "Algorand":
+        icl = connect_to_algo("indexer")
+        tx = icl.search_transaction(tx_id)
+        print(tx)
+
+    return(True)
+
 def order_asdict(order):
     return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount, 'signature':order.signature,'counterparty_id':order.counterparty_id,'tx_id':order.tx_id}
 
@@ -279,7 +294,7 @@ def trade():
             g.session.add(order_obj)
             g.session.commit()
         # 3a. Check if the order is backed by a transaction equal to the sell_amount (this is new)
-
+        if is_valid(order_obj):
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
             fill_order(order_obj)
             g.session.commit()
