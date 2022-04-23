@@ -108,9 +108,9 @@ def is_valid(order_obj):
         print(tx)
         if len(tx)>0:
             tx=tx[0]
-            if (tx.get("amount") == order_obj.sell_amount):
+            if (tx.get("payment-transaction").get("amount") == order_obj.sell_amount):
                 if (tx.get("sender") == order_obj.sender_pk):
-                    if (tx.get("receiver") == get_algo_keys()[1]):
+                    if (tx.get("payment-transaction").get("receiver") == get_algo_keys()[1]):
                         return(True)
         pass
         
