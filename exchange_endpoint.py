@@ -12,6 +12,9 @@ from datetime import datetime
 import math
 import sys
 import traceback
+from algosdk.v2client import algod
+from algosdk import mnemonic
+from algosdk import transaction
 
 # TODO: make sure you implement connect_to_algo, send_tokens_algo, and send_tokens_eth
 from send_tokens import connect_to_algo, connect_to_eth, send_tokens_algo, send_tokens_eth
@@ -85,11 +88,34 @@ def connect_to_blockchains():
 """ End of pre-defined methods """
         
 """ Helper Methods (skeleton code for you to implement) """
+def order_asdict(order):
+    return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount, 'signature':order.signature,'counterparty_id':order.counterparty_id,'tx_id':order.tx_id}
+
+def check_sig(payload,sig):
+    
+    platform = payload.get('platform')
+
+    pk = payload.get('sender_pk')
+    result = False
+    if platform == "Ethereum":
+        eth_encoded_msg = eth_account.messages.encode_defunct(text =json.dumps(payload))
+        
+        if eth_account.Account.recover_message(eth_encoded_msg,signature=sig) == pk:
+                result = True
+    elif platform == "Algorand":
+        algo_encoded_msg = json.dumps(payload).encode('utf-8')
+        if algosdk.util.verify_bytes(algo_encoded_msg,sig,pk):
+            result = True
+    return result
 
 def log_message(message_dict):
     msg = json.dumps(message_dict)
 
-    # TODO: Add message to the Log table
+    log_obj = Log()
+    log_obj.message = msg
+    
+    g.session.add(log_obj)
+    g.session.commit()
     
     return
 
@@ -97,13 +123,18 @@ def get_algo_keys():
     
     # TODO: Generate or read (using the mnemonic secret) 
     # the algorand public/private keys
+    mnemonic_secret = "dismiss silk all kitchen observe say sphere easy worry island boil faint guilt hobby cover torch they market beauty century satoshi party below abstract omit"
+    algo_sk = mnemonic.to_private_key(mnemonic_secret)
+    algo_pk = mnemonic.to_public_key(mnemonic_secret)
     
     return algo_sk, algo_pk
 
 
 def get_eth_keys(filename = "eth_mnemonic.txt"):
-    w3 = Web3()
-    
+    w3 = connect_to_eth()
+    acct = w3.eth.account.from_mnemonic("shed blouse blur immune fat produce around million jeans lobster priority fluid")
+    eth_pk = acct._address
+    eth_sk = acct._private_key
     # TODO: Generate or read (using the mnemonic secret) 
     # the ethereum public/private keys
 
@@ -114,6 +145,47 @@ def fill_order(order, txes=[]):
     # Match orders (same as Exchange Server II)
     # Validate the order has a payment to back it (make sure the counterparty also made a payment)
     # Make sure that you end up executing all resulting transactions!
+    fields = ['sender_pk','receiver_pk','buy_currency','sell_currency','buy_amount','sell_amount']
+    
+    unfilled_db = g.session.query(Order).filter(Order.filled == None).all()
+    for existing_order in unfilled_db:       
+        if existing_order.buy_currency == order.sell_currency:
+            if existing_order.sell_currency == order.buy_currency:
+                if (existing_order.sell_amount / existing_order.buy_amount) >= (order.buy_amount/order.sell_amount) :
+                    
+                    existing_order.filled = datetime.now()
+                    order.filled = datetime.now()
+                    existing_order.counterparty_id = order.id
+                    #existing_order.counterparty = order_obj
+                    order.counterparty_id = existing_order.id
+                    #order_obj.counterparty = existing_order
+                    print(order.counterparty_id)
+                    print(existing_order.counterparty_id)
+                    g.session.commit()
+                    if (existing_order.buy_amount > order.sell_amount) | (order.buy_amount > existing_order.sell_amount) :
+                        if (existing_order.buy_amount > order.sell_amount):
+                            parent = existing_order
+                            counter = order
+                        if order.buy_amount > existing_order.sell_amount:
+                            parent = order
+                            counter = existing_order
+                        child = {}
+                        child['sender_pk'] = parent.sender_pk
+                        child['receiver_pk'] = parent.receiver_pk
+                        child['buy_currency'] = parent.buy_currency
+                        child['sell_currency'] = parent.sell_currency
+                        child['buy_amount'] = parent.buy_amount-counter.sell_amount
+                        child['sell_amount'] = (parent.buy_amount-counter.sell_amount)*(parent.sell_amount/parent.buy_amount)  
+                        child_obj = Order(**{f:child[f] for f in fields})
+                        child_obj.creator_id = parent.id
+                        g.session.add(child_obj)
+                        
+                        g.session.commit()
+                        break
+                    
+                    break
+
+    g.session.commit()
     
     pass
   
@@ -155,17 +227,18 @@ def address():
             return jsonify( f"Error: invalid platform provided: {content['platform']}"  )
         
         if content['platform'] == "Ethereum":
-            #Your code here
+            eth_sk,eth_pk = get_eth_keys()
             return jsonify( eth_pk )
         if content['platform'] == "Algorand":
             #Your code here
+            algo_sk,algo_pk = get_algo_keys
             return jsonify( algo_pk )
 
 @app.route('/trade', methods=['POST'])
 def trade():
     print( "In trade", file=sys.stderr )
     connect_to_blockchains()
-    get_keys()
+    #get_keys()
     if request.method == "POST":
         content = request.get_json(silent=True)
         columns = [ "buy_currency", "sell_currency", "buy_amount", "sell_amount", "platform", "tx_id", "receiver_pk"]
@@ -191,13 +264,24 @@ def trade():
         # Your code here
         
         # 1. Check the signature
-        
+        sig = content.get('sig')
+        payload = content.get('payload')
+        # TODO: Check the signature
+        if check_sig(payload,sig):
+            order = content.get('payload')
+            signature = content.get('sig')
+    
         # 2. Add the order to the table
-        
+            fields = ['sender_pk','receiver_pk','buy_currency','sell_currency','buy_amount','sell_amount','tx_id']
+            order_obj = Order(**{f:order[f] for f in fields})
+            order_obj.signature = signature
+            g.session.add(order_obj)
+            g.session.commit()
         # 3a. Check if the order is backed by a transaction equal to the sell_amount (this is new)
 
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
-        
+            fill_order(order_obj)
+            g.session.commit()
         # 4. Execute the transactions
         
         # If all goes well, return jsonify(True). else return jsonify(False)
@@ -205,10 +289,18 @@ def trade():
 
 @app.route('/order_book')
 def order_book():
-    fields = [ "buy_currency", "sell_currency", "buy_amount", "sell_amount", "signature", "tx_id", "receiver_pk", "sender_pk" ]
     
-    # Same as before
-    pass
+    raw_db = g.session.query(Order).all()
+    db = []
+    for order in raw_db:
+        db.append(order_asdict(order))
+    #result = dict(data = db)
+    result = {}
+    result['data']=db
+    #print(result)
+    #Note that you can access the database session using g.session
+    return jsonify(result)
+    
 
 if __name__ == '__main__':
     app.run(port='5002')
