@@ -94,11 +94,13 @@ def is_valid(order_obj):
     if platform == "Ethereum":
         w3 = connect_to_eth()
         tx = w3.eth.get_transaction(tx_id)
+        print('Eth tx:')
         print(tx)
         pass
     elif platform == "Algorand":
         icl = connect_to_algo("indexer")
         tx = icl.search_transaction(tx_id)
+        print("algo tx:")
         print(tx)
 
     return(True)
