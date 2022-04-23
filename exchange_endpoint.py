@@ -103,7 +103,7 @@ def is_valid(order_obj):
         pass
     elif platform == "Algorand":
         icl = connect_to_algo(connection_type='indexer')
-        tx = icl.transaction(tx_id).get('transactions')
+        tx = icl.search_transactions(txid = tx_id).get('transactions')
         #print("algo tx:")
         print(tx)
         if len(tx)>0:
