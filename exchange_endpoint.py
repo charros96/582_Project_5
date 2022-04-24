@@ -186,9 +186,7 @@ def fill_order(order, txes=[]):
     fields = ['sender_pk','receiver_pk','buy_currency','sell_currency','buy_amount','sell_amount']
     
     unfilled_db = g.session.query(Order).filter(Order.filled == None).all()
-    for existing_order in unfilled_db:
-        
-
+    for existing_order in unfilled_db: 
         if existing_order.buy_currency == order.sell_currency:
             if existing_order.sell_currency == order.buy_currency:
                 if (existing_order.sell_amount / existing_order.buy_amount) >= (order.buy_amount/order.sell_amount) :
@@ -231,7 +229,7 @@ def fill_order(order, txes=[]):
                         break
                         
     g.session.commit()
-    
+    print("leaving fill order")
     return txes
   
 def execute_txes(txes):
@@ -256,10 +254,6 @@ def execute_txes(txes):
     algo_tx_ids = send_tokens_algo(g.acl,algo_sk,algo_txes)
     eth_tx_ids = send_tokens_eth(g.w3,eth_sk,eth_txes)
     fields = ['platform','receiver_pk','order_id']
-    print(algo_txes)
-    print(algo_tx_ids)
-    print(eth_txes)
-    print(eth_tx_ids)
 
     
     tx_obj = TX(**{f:algo_txes[0][f] for f in fields})
@@ -279,7 +273,7 @@ def execute_txes(txes):
     #       1. Send tokens on the Algorand and eth testnets, appropriately
     #          We've provided the send_tokens_algo and send_tokens_eth skeleton methods in send_tokens.py
     #       2. Add all transactions to the TX table
-
+    print("leaving execute txes")
     return True
 
 """ End of Helper methods"""
@@ -352,7 +346,7 @@ def trade():
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
                 
                 fill_order(order_obj)
-                #print(txes)
+                
                 #execute_txes(txes2)
                 g.session.commit()
         # 4. Execute the transactions
