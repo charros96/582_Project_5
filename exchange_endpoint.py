@@ -206,6 +206,8 @@ def fill_order(order, txes=[]):
                         tx_fields = ['platform','receiver_pk','order_id']
                         tx_obj = TX(**{f:tx_order[f] for f in tx_fields})
                         tx_xobj = TX(**{f:tx_xorder[f] for f in tx_fields})
+                        g.session.add(tx_obj)
+                        g.session.add(tx_xobj)
                         if tx_obj.platform=="Algorand":
                             tx_obj.tx_id = algo_id
                             tx_xobj.tx_id = eth_id
@@ -213,8 +215,7 @@ def fill_order(order, txes=[]):
                             tx_obj.tx_id = eth_id
                             tx_xobj.tx_id = algo_id
                         
-                        g.session.add(tx_obj)
-                        g.session.add(tx_xobj)
+                        
                         #print(order.counterparty_id)
                         #print(existing_order.counterparty_id)
                         g.session.commit()
