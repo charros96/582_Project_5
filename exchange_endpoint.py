@@ -95,8 +95,8 @@ def is_valid(order_obj):
     platform = order_obj.sell_currency
     tx_id = order_obj.tx_id
     if platform == "Ethereum":
-        w3 = connect_to_eth()
-        tx = w3.eth.get_transaction(tx_id)
+        
+        tx = g.w3.eth.get_transaction(tx_id)
         #print('Eth tx:')
         #print(tx)
         if (tx.get("value") == order_obj.sell_amount):
@@ -105,9 +105,9 @@ def is_valid(order_obj):
                     return(True)
         pass
     elif platform == "Algorand":
-        icl = connect_to_algo(connection_type='indexer')
-        time.sleep(5)
-        tx = icl.search_transactions(txid = tx_id).get('transactions')
+        #icl = connect_to_algo(connection_type='indexer')
+        #time.sleep(5)
+        tx = g.icl.search_transactions(txid = tx_id).get('transactions')
         #print("algo tx:")
         #print(tx)
         if len(tx)>0:
@@ -165,9 +165,9 @@ def get_algo_keys():
 
 
 def get_eth_keys(filename = "eth_mnemonic.txt"):
-    w3 = connect_to_eth()
-    w3.eth.account.enable_unaudited_hdwallet_features()
-    acct = w3.eth.account.from_mnemonic("shed blouse blur immune fat produce around million jeans lobster priority fluid")
+    
+    g.w3.eth.account.enable_unaudited_hdwallet_features()
+    acct = g.w3.eth.account.from_mnemonic("shed blouse blur immune fat produce around million jeans lobster priority fluid")
     eth_pk = acct._address
     eth_sk = acct._private_key
     # TODO: Generate or read (using the mnemonic secret) 
@@ -249,29 +249,28 @@ def execute_txes(txes):
     algo_txes = [tx for tx in txes if tx['platform'] == "Algorand" ]
     eth_txes = [tx for tx in txes if tx['platform'] == "Ethereum" ]
 
-    w3 = connect_to_eth()
-    acl = connect_to_algo()
+    
 
-    algo_tx_ids = send_tokens_algo(acl,algo_sk,algo_txes)
-    eth_tx_ids = send_tokens_eth(w3,eth_sk,eth_txes)
+    algo_tx_ids = send_tokens_algo(g.acl,algo_sk,algo_txes)
+    eth_tx_ids = send_tokens_eth(g.w3,eth_sk,eth_txes)
     fields = ['platform','receiver_pk','order_id']
-    print(algo_txes[0])
-    print(algo_tx_ids)
-    i=0
-    for tx in algo_txes:
+    #print(algo_txes[0])
+    #print(algo_tx_ids)
+    
+    for i, tx in enumerate(algo_txes):
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = algo_tx_ids[i]
         g.session.add(tx_obj)
         g.session.commit()
-        i+1
         
-    i=0
-    for tx in eth_txes:
+        
+    
+    for tx in enumerate(eth_txes):
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = eth_tx_ids[i]
         g.session.add(tx_obj)
         g.session.commit()
-        i+1
+        
 
     # TODO: 
     #       1. Send tokens on the Algorand and eth testnets, appropriately
