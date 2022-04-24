@@ -195,8 +195,8 @@ def fill_order(order, txes=[]):
                         order.counterparty_id = existing_order.id
                         #order_obj.counterparty = existing_order
                         tx_order = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount':order.buy_amount}
-                        print(tx_order['platform'])
-                        print(tx_order['receiver_pk'])
+                        #print(tx_order['platform'])
+                        #print(tx_order['receiver_pk'])
                         tx_xorder = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':order.buy_amount}
                         txes.append(tx_order)
                         txes.append(tx_xorder)
@@ -255,19 +255,22 @@ def execute_txes(txes):
     fields = ['platform','receiver_pk','order_id']
     print(algo_txes[0])
     print(algo_tx_ids)
-    for i,tx in algo_txes:
+    i=0
+    for tx in algo_txes:
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = algo_tx_ids[i]
         g.session.add(tx_obj)
         g.session.commit()
+        i+1
         
-
-    for i,tx in eth_txes:
+    i=0
+    for tx in eth_txes:
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = eth_tx_ids[i]
         g.session.add(tx_obj)
         g.session.commit()
-
+        i+1
+        
     # TODO: 
     #       1. Send tokens on the Algorand and eth testnets, appropriately
     #          We've provided the send_tokens_algo and send_tokens_eth skeleton methods in send_tokens.py
