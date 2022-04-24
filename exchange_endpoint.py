@@ -262,21 +262,18 @@ def execute_txes(txes):
     print(eth_txes)
     print(eth_tx_ids)
 
-    for i, tx in enumerate(algo_txes):
-        print(i)
-        print(tx)
-        tx_obj = TX(**{f:tx[f] for f in fields})
-        tx_obj.tx_id = algo_tx_ids[i]
-        g.session.add(tx_obj)
-        g.session.commit()
+    
+    tx_obj = TX(**{f:algo_txes[0][f] for f in fields})
+    tx_obj.tx_id = algo_tx_ids[0]
+    g.session.add(tx_obj)
+    g.session.commit()
         
         
     
-    for i, tx in enumerate(eth_txes):
-        tx_obj = TX(**{f:tx[f] for f in fields})
-        tx_obj.tx_id = eth_tx_ids[i]
-        g.session.add(tx_obj)
-        g.session.commit()
+    tx_obj = TX(**{f:eth_txes[0][f] for f in fields})
+    tx_obj.tx_id = eth_tx_ids[0]
+    g.session.add(tx_obj)
+    g.session.commit()
         
 
     # TODO: 
