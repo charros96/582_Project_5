@@ -15,6 +15,7 @@ import traceback
 from algosdk.v2client import algod
 from algosdk import mnemonic
 from algosdk import transaction
+import time
 
 # TODO: make sure you implement connect_to_algo, send_tokens_algo, and send_tokens_eth
 from send_tokens import connect_to_algo, connect_to_eth, send_tokens_algo, send_tokens_eth
@@ -105,6 +106,7 @@ def is_valid(order_obj):
         pass
     elif platform == "Algorand":
         icl = connect_to_algo(connection_type='indexer')
+        time.sleep(5)
         tx = icl.search_transactions(txid = tx_id).get('transactions')
         #print("algo tx:")
         #print(tx)
