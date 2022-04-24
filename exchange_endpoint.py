@@ -216,7 +216,7 @@ def fill_order(order, txes=[]):
                             child['buy_currency'] = parent.buy_currency
                             child['sell_currency'] = parent.sell_currency
                             child['buy_amount'] = parent.buy_amount-counter.sell_amount
-                            child['sell_amount'] = (parent.buy_amount-counter.sell_amount)*(parent.sell_amount/parent.buy_amount)  
+                            child['sell_amount'] = int((parent.buy_amount-counter.sell_amount)*(parent.sell_amount/parent.buy_amount))  
                             child_obj = Order(**{f:child[f] for f in fields})
                             child_obj.creator_id = parent.id
                             g.session.add(child_obj)
