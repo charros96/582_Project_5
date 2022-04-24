@@ -121,7 +121,7 @@ def is_valid(order_obj):
     return(False)
 
 def order_asdict(order):
-    return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount, 'tx_id':order.tx_id}
+    return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount, 'signature':order.signature}
 
 def check_sig(payload,sig):
     
