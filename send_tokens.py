@@ -49,8 +49,8 @@ def send_tokens_algo( acl, sender_sk, txes):
     tx_ids = []
     for i,tx in enumerate(txes):
         #tx = transaction.PaymentTxn(pk, tx_fee, first_valid_round, last_valid_round, gen_hash, receiver_pk, tx_amount, flat_fee=True)
-        
-        unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.get('receiver_pk'), tx.get('amount'),flat_fee=True)
+        unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.get('receiver_pk'), tx.get('amount'), flat_fee=True)
+        #unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.get('receiver_pk'), tx.get('amount'),flat_fee=True)
 
         # TODO: Sign the transaction
         signed_tx = unsigned_tx.sign(sender_sk)
