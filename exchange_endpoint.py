@@ -98,8 +98,8 @@ def is_valid(order_obj):
     platform = order_obj.sell_currency
     tx_id = order_obj.tx_id
     if platform == "Ethereum":
-        w3 = connect_to_eth()
-        tx = w3.eth.get_transaction(tx_id)
+        
+        tx = g.w3.eth.get_transaction(tx_id)
         #print('Eth tx:')
         #print(tx)
         if (tx.get("value") == order_obj.sell_amount):
@@ -119,7 +119,7 @@ def is_valid(order_obj):
                 if (tx.get("sender") == order_obj.sender_pk):
                     if (tx.get("payment-transaction").get("receiver") == get_algo_keys()[1]):
                         return(True)
-        pass
+        
         
         
 
@@ -230,10 +230,10 @@ def fill_order(order, txes=[]):
                             break
                     
                         break
-    execute_txes(txes)                    
+                        
     g.session.commit()
     
-    pass
+    return txes
   
 def execute_txes(txes):
     if txes is None:
@@ -257,10 +257,10 @@ def execute_txes(txes):
     algo_tx_ids = send_tokens_algo(g.acl,algo_sk,algo_txes)
     eth_tx_ids = send_tokens_eth(g.w3,eth_sk,eth_txes)
     fields = ['platform','receiver_pk','order_id']
-    print(algo_txes[0])
-    print(algo_tx_ids[0])
-    print(eth_txes[0])
-    print(eth_tx_ids[0])
+    print(algo_txes)
+    print(algo_tx_ids)
+    print(eth_txes)
+    print(eth_tx_ids)
 
     for i, tx in enumerate(algo_txes):
         tx_obj = TX(**{f:tx[f] for f in fields})
@@ -352,9 +352,9 @@ def trade():
         # 3a. Check if the order is backed by a transaction equal to the sell_amount (this is new)
             if is_valid(order_obj):
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
-                fill_order(order_obj)
+                txes = fill_order(order_obj)
                 #print(txes)
-                
+                execute_txes(txes)
                 g.session.commit()
         # 4. Execute the transactions
         
