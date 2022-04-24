@@ -8,7 +8,7 @@ import time
 
 def connect_to_algo(connection_type=''):
     #Connect to Algorand node maintained by PureStake
-    algod_token = "B3SU4KcVKi94Jap2VXkK83xx38bsv95K5UZm2lab"
+    algod_token = "6duUcOfGJW8pvivJWv7Vo71WQfNNS1ci8Qcy1jmS"
     headers = {
             "X-API-Key": algod_token,
                 }
