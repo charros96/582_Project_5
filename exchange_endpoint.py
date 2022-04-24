@@ -254,8 +254,10 @@ def execute_txes(txes):
     algo_tx_ids = send_tokens_algo(g.acl,algo_sk,algo_txes)
     eth_tx_ids = send_tokens_eth(g.w3,eth_sk,eth_txes)
     fields = ['platform','receiver_pk','order_id']
-    #print(algo_txes[0])
-    #print(algo_tx_ids)
+    print(algo_txes[0])
+    print(algo_tx_ids[0])
+    print(eth_txes[0])
+    print(eth_tx_ids[0])
     
     for i, tx in enumerate(algo_txes):
         tx_obj = TX(**{f:tx[f] for f in fields})
@@ -265,7 +267,7 @@ def execute_txes(txes):
         
         
     
-    for tx in enumerate(eth_txes):
+    for i, tx in enumerate(eth_txes):
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = eth_tx_ids[i]
         g.session.add(tx_obj)
@@ -277,7 +279,7 @@ def execute_txes(txes):
     #          We've provided the send_tokens_algo and send_tokens_eth skeleton methods in send_tokens.py
     #       2. Add all transactions to the TX table
 
-    pass
+    return True
 
 """ End of Helper methods"""
   
