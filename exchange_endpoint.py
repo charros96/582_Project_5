@@ -105,7 +105,7 @@ def is_valid(order_obj):
         icl = connect_to_algo(connection_type='indexer')
         tx = icl.search_transactions(txid = tx_id).get('transactions')
         #print("algo tx:")
-        print(tx)
+        #print(tx)
         if len(tx)>0:
             tx=tx[0]
             if (tx.get("payment-transaction").get("amount") == order_obj.sell_amount):
