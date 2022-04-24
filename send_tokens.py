@@ -48,7 +48,7 @@ def send_tokens_algo( acl, sender_sk, txes):
     tx_ids = []
     for i,tx in enumerate(txes):
         #tx = transaction.PaymentTxn(pk, tx_fee, first_valid_round, last_valid_round, gen_hash, receiver_pk, tx_amount, flat_fee=True)
-        tx = txes[i]
+        
         unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.receiver_pk, tx.amount, flat_fee=True)
 
         # TODO: Sign the transaction
@@ -133,9 +133,6 @@ def send_tokens_eth(w3,sender_sk,txes):
     starting_nonce = w3.eth.get_transaction_count(sender_pk,"pending")
     tx_ids = []
     for i,tx in enumerate(txes):
-        print(tx)
-        tx = txes[i]
-        print(tx)
         tx_dict = {
                 'nonce': starting_nonce+i, #Locally update nonce
                 'gasPrice':w3.eth.gas_price,
