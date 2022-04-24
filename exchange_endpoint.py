@@ -187,7 +187,7 @@ def fill_order(order, txes=[]):
     # Make sure that you end up executing all resulting transactions!
     fields = ['sender_pk','receiver_pk','buy_currency','sell_currency','buy_amount','sell_amount']
     
-    unfilled_db = g.session.query(Order).filter(Order.filled == None).all()
+    unfilled_db = g.session.query(Order).filter(Order.filled == None).filter(Order.sell_currency==order.buy_currency).all()
     #print(len(unfilled_db))
     for existing_order in unfilled_db: 
         if existing_order.buy_currency == order.sell_currency:
