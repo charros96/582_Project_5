@@ -34,10 +34,7 @@ def send_tokens_algo( acl, sender_sk, txes):
     # TODO: You might want to adjust the first/last valid rounds in the suggested_params
     #       See guide for details
     params = acl.suggested_params()
-    gen_hash = params.gh
-    first_valid_round = params.first
-    tx_fee = params.min_fee
-    last_valid_round = params.last
+    
     # TODO: For each transaction, do the following:
     #       - Create the Payment transaction 
     #       - Sign the transaction
@@ -49,7 +46,7 @@ def send_tokens_algo( acl, sender_sk, txes):
     tx_ids = []
     for i,tx in enumerate(txes):
         #tx = transaction.PaymentTxn(pk, tx_fee, first_valid_round, last_valid_round, gen_hash, receiver_pk, tx_amount, flat_fee=True)
-        unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.get('receiver_pk'), tx.get('amount'), flat_fee=True)
+        unsigned_tx = transaction.PaymentTxn(sender_pk,params,tx.get('receiver_pk'),tx.get('amount') )
         #unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.get('receiver_pk'), tx.get('amount'),flat_fee=True)
 
         # TODO: Sign the transaction
