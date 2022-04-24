@@ -367,7 +367,7 @@ def trade():
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
                 
                 fill_order(order_obj)
-                print(g.session.query(TX).all())
+                print(tx.amount for tx in g.session.query(TX).all())
                 #execute_txes(txes2)
                 g.session.commit()
                 return jsonify(True)
