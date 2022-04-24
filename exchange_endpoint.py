@@ -203,8 +203,7 @@ def fill_order(order, txes=[]):
                         #print(tx_order['platform'])
                         #print(tx_order['receiver_pk'])
                         tx_xorder = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':order.buy_amount}
-                        txes.append(tx_order)
-                        txes.append(tx_xorder)
+                        execute_txes[tx_order,tx_xorder]
                         #print(order.counterparty_id)
                         #print(existing_order.counterparty_id)
                         g.session.commit()
@@ -351,10 +350,10 @@ def trade():
         # 3a. Check if the order is backed by a transaction equal to the sell_amount (this is new)
             if is_valid(order_obj):
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
-                txes = []
-                txes = fill_order(order_obj)
+                
+                fill_order(order_obj)
                 #print(txes)
-                execute_txes(txes)
+                #execute_txes(txes2)
                 g.session.commit()
         # 4. Execute the transactions
         
