@@ -52,7 +52,7 @@ def send_tokens_algo( acl, sender_sk, txes):
         unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.get('receiver_pk'), tx.get('amount'))
 
         # TODO: Sign the transaction
-        signed_tx = tx.sign(sender_sk)
+        signed_tx = unsigned_tx.sign(sender_sk)
         
         try:
             print(f"Sending {tx['amount']} microalgo from {sender_pk} to {tx['receiver_pk']}" )
