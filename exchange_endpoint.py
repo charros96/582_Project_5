@@ -182,12 +182,12 @@ def fill_order(order, txes=[]):
     
     unfilled_db = g.session.query(Order).filter(Order.filled == None).all()
     for existing_order in unfilled_db:
-        if is_valid(existing_order):
+        
 
-            if existing_order.buy_currency == order.sell_currency:
-                if existing_order.sell_currency == order.buy_currency:
-                    if (existing_order.sell_amount / existing_order.buy_amount) >= (order.buy_amount/order.sell_amount) :
-                    
+        if existing_order.buy_currency == order.sell_currency:
+            if existing_order.sell_currency == order.buy_currency:
+                if (existing_order.sell_amount / existing_order.buy_amount) >= (order.buy_amount/order.sell_amount) :
+                    if is_valid(existing_order):
                         existing_order.filled = datetime.now()
                         order.filled = datetime.now()
                         existing_order.counterparty_id = order.id
