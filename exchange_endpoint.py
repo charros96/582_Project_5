@@ -202,10 +202,17 @@ def fill_order(order, txes=[]):
                         #print(tx_order['platform'])
                         #print(tx_order['receiver_pk'])
                         tx_xorder = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':order.buy_amount}
-                        #execute_txes([tx_order,tx_xorder])
+                        algo_id, eth_id = execute_txes([tx_order,tx_xorder])
                         tx_fields = ['platform','receiver_pk','order_id']
                         tx_obj = TX(**{f:tx_order[f] for f in tx_fields})
                         tx_xobj = TX(**{f:tx_xorder[f] for f in tx_fields})
+                        if tx_obj['platform']=="Algorand":
+                            tx_obj.tx_id = algo_id
+                            tx_xobj.tx_id = eth_id
+                        else:
+                            tx_obj.tx_id = eth_id
+                            tx_xobj.tx_id = algo_id
+                        
                         g.session.add(tx_obj)
                         g.session.add(tx_xobj)
                         #print(order.counterparty_id)
@@ -257,23 +264,14 @@ def execute_txes(txes):
 
     
 
-    algo_tx_ids = send_tokens_algo(g.acl,algo_sk,algo_txes)
-    eth_tx_ids = send_tokens_eth(g.w3,eth_sk,eth_txes)
-    fields = ['platform','receiver_pk','order_id']
-
+    algo_tx_id = send_tokens_algo(g.acl,algo_sk,algo_txes)
+    eth_tx_id = send_tokens_eth(g.w3,eth_sk,eth_txes)
     
-    tx_obj = TX(**{f:algo_txes[0][f] for f in fields})
-    tx_obj.tx_id = algo_tx_ids[0]
-    g.session.add(tx_obj)
-    g.session.commit()
-        
-        
+    return algo_tx_id,eth_tx_id
     
-    tx_obj = TX(**{f:eth_txes[0][f] for f in fields})
-    tx_obj.tx_id = eth_tx_ids[0]
-    g.session.add(tx_obj)
-    g.session.commit()
-        
+    
+    
+    
 
     # TODO: 
     #       1. Send tokens on the Algorand and eth testnets, appropriately
