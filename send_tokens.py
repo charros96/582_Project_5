@@ -45,9 +45,9 @@ def send_tokens_algo( acl, sender_sk, txes):
 
     tx_ids = []
     for i,tx in enumerate(txes):
-        #tx = transaction.PaymentTxn(pk, tx_fee, first_valid_round, last_valid_round, gen_hash, receiver_pk, tx_amount, flat_fee=True)
+        
         unsigned_tx = transaction.PaymentTxn(sender_pk,params,tx.get('receiver_pk'),tx.get('amount') )
-        #unsigned_tx = transaction.PaymentTxn(sender_pk, tx_fee, first_valid_round, last_valid_round, gen_hash, tx.get('receiver_pk'), tx.get('amount'),flat_fee=True)
+        
 
         # TODO: Sign the transaction
         signed_tx = unsigned_tx.sign(sender_sk)
@@ -58,7 +58,7 @@ def send_tokens_algo( acl, sender_sk, txes):
             # TODO: Send the transaction to the testnet
             tx_confirm = acl.send_transaction(signed_tx)
             tx_id=signed_tx.transaction.get_txid()
-            time.sleep(5)
+            time.sleep(7)
             txinfo = wait_for_confirmation_algo(acl, txid=tx_id )
             print(f"Sent {tx['amount']} microalgo in transaction: {tx_id}\n" )
             tx_ids.append(tx_id)

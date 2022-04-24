@@ -27,6 +27,9 @@ DBSession = sessionmaker(bind=engine)
 
 app = Flask(__name__)
 
+
+
+
 """ Pre-defined methods (do not need to change) """
 
 @app.before_request
@@ -105,7 +108,7 @@ def is_valid(order_obj):
                     return(True)
         pass
     elif platform == "Algorand":
-        #icl = connect_to_algo(connection_type='indexer')
+        g.icl = connect_to_algo(connection_type='indexer')
         #time.sleep(5)
         tx = g.icl.search_transactions(txid = tx_id).get('transactions')
         #print("algo tx:")
@@ -154,7 +157,7 @@ def log_message(message_dict):
     return
 
 def get_algo_keys():
-    
+    g.acl = connect_to_algo()
     # TODO: Generate or read (using the mnemonic secret) 
     # the algorand public/private keys
     mnemonic_secret = "dismiss silk all kitchen observe say sphere easy worry island boil faint guilt hobby cover torch they market beauty century satoshi party below abstract omit"
@@ -165,7 +168,7 @@ def get_algo_keys():
 
 
 def get_eth_keys(filename = "eth_mnemonic.txt"):
-    
+    g.w3 = connect_to_eth()
     g.w3.eth.account.enable_unaudited_hdwallet_features()
     acct = g.w3.eth.account.from_mnemonic("shed blouse blur immune fat produce around million jeans lobster priority fluid")
     eth_pk = acct._address
@@ -258,7 +261,7 @@ def execute_txes(txes):
     print(algo_tx_ids[0])
     print(eth_txes[0])
     print(eth_tx_ids[0])
-    
+
     for i, tx in enumerate(algo_txes):
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = algo_tx_ids[i]
