@@ -222,7 +222,7 @@ def fill_order(order, txes=[]):
                         
                             g.session.commit()
                             tx_parent = {'platform':parent.buy_currency,'receiver_pk':parent.receiver_pk,'order_id':parent.id,'amount':int(counter.sell_amount)}
-                            print(tx_counter.platform,tx_parent.amount)
+                            print(tx_parent.platform,tx_parent.amount)
                             #print(tx_order['receiver_pk'])
                             tx_counter = {'platform':counter.buy_currency,'receiver_pk':counter.receiver_pk,'order_id':counter.id,'amount': int(counter.buy_amount)}
                             print(tx_counter.platform,tx_counter.amount)
