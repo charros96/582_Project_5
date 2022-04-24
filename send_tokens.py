@@ -4,6 +4,7 @@ from algosdk.v2client import algod
 from algosdk.v2client import indexer
 from algosdk import account
 from algosdk.future import transaction
+import time
 
 def connect_to_algo(connection_type=''):
     #Connect to Algorand node maintained by PureStake
@@ -60,7 +61,7 @@ def send_tokens_algo( acl, sender_sk, txes):
             # TODO: Send the transaction to the testnet
             tx_confirm = acl.send_transaction(signed_tx)
             tx_id=signed_tx.transaction.get_txid()
-            
+            time.sleep(5)
             txinfo = wait_for_confirmation_algo(acl, txid=tx_id )
             print(f"Sent {tx['amount']} microalgo in transaction: {tx_id}\n" )
             tx_ids.append(tx_id)
@@ -78,6 +79,7 @@ def wait_for_confirmation_algo(client, txid):
     last_round = client.status().get('last-round')
     txinfo = client.pending_transaction_info(txid)
     while not (txinfo.get('confirmed-round') and txinfo.get('confirmed-round') > 0):
+        time.sleep(5)
         print("Waiting for confirmation")
         last_round += 1
         client.status_after_block(last_round)
