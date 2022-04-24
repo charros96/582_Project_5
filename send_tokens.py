@@ -29,7 +29,7 @@ def connect_to_algo(connection_type=''):
     return None
 
 def send_tokens_algo( acl, sender_sk, txes):
-    params = acl.suggested_params
+    #params = acl.suggested_params
     
     # TODO: You might want to adjust the first/last valid rounds in the suggested_params
     #       See guide for details
@@ -46,7 +46,7 @@ def send_tokens_algo( acl, sender_sk, txes):
     tx_ids = []
     for i,tx in enumerate(txes):
         
-        unsigned_tx = transaction.PaymentTxn(sender_pk,params,tx.get('receiver_pk'),tx.get('amount') )
+        unsigned_tx = transaction.PaymentTxn(sender_pk,params,tx.get('receiver_pk'),int(tx.get('amount')) )
         
 
         # TODO: Sign the transaction
