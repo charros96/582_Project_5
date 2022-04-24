@@ -199,22 +199,7 @@ def fill_order(order, txes=[]):
                         
                         order.counterparty_id = existing_order.id
                         
-                        tx_order = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount':order.buy_amount}
-                        #print(tx_order['platform'])
-                        #print(tx_order['receiver_pk'])
-                        tx_xorder = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':order.buy_amount}
-                        algo_id, eth_id = execute_txes([tx_order,tx_xorder])
-                        tx_fields = ['platform','receiver_pk','order_id']
-                        tx_obj = TX(**{f:tx_order[f] for f in tx_fields})
-                        tx_xobj = TX(**{f:tx_xorder[f] for f in tx_fields})
-                        g.session.add(tx_obj)
-                        g.session.add(tx_xobj)
-                        if tx_obj.platform=="Algorand":
-                            tx_obj.tx_id = algo_id
-                            tx_xobj.tx_id = eth_id
-                        else:
-                            tx_obj.tx_id = eth_id
-                            tx_xobj.tx_id = algo_id
+                        
                         
                         
                         #print(order.counterparty_id)
@@ -239,8 +224,41 @@ def fill_order(order, txes=[]):
                             g.session.add(child_obj)
                         
                             g.session.commit()
+                            tx_parent = {'platform':parent.buy_currency,'receiver_pk':parent.receiver_pk,'order_id':parent.id,'amount':parent.buy_amount-counter.sell_amount}
+                            #print(tx_order['platform'])
+                            #print(tx_order['receiver_pk'])
+                            tx_counter = {'platform':counter.buy_currency,'receiver_pk':counter.receiver_pk,'order_id':counter.id,'amount':counter.buy_amount}
+                            algo_id, eth_id = execute_txes([tx_parent,tx_counter])
+                            tx_fields = ['platform','receiver_pk','order_id']
+                            tx_obj = TX(**{f:tx_parent[f] for f in tx_fields})
+                            tx_xobj = TX(**{f:tx_counter[f] for f in tx_fields})
+                            g.session.add(tx_obj)
+                            g.session.add(tx_xobj)
+                            if tx_obj.platform=="Algorand":
+                                tx_obj.tx_id = algo_id
+                                tx_xobj.tx_id = eth_id
+                            else:
+                                tx_obj.tx_id = eth_id
+                                tx_xobj.tx_id = algo_id
+                            g.session.commit()
                             break
-                    
+                        tx_parent = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount':order.buy_amount}
+                        #print(tx_order['platform'])
+                        #print(tx_order['receiver_pk'])
+                        tx_counter = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':existing_order.buy_amount}
+                        algo_id, eth_id = execute_txes([tx_parent,tx_counter])
+                        tx_fields = ['platform','receiver_pk','order_id']
+                        tx_obj = TX(**{f:tx_parent[f] for f in tx_fields})
+                        tx_xobj = TX(**{f:tx_counter[f] for f in tx_fields})
+                        g.session.add(tx_obj)
+                        g.session.add(tx_xobj)
+                        if tx_obj.platform=="Algorand":
+                            tx_obj.tx_id = algo_id
+                            tx_xobj.tx_id = eth_id
+                        else:
+                            tx_obj.tx_id = eth_id
+                            tx_xobj.tx_id = algo_id
+                        g.session.commit()
                         break
                         
     g.session.commit()
