@@ -221,7 +221,7 @@ def fill_order(order, txes=[]):
                             g.session.add(child_obj)
                         
                             g.session.commit()
-                            tx_parent = {'platform':parent.buy_currency,'receiver_pk':parent.receiver_pk,'order_id':parent.id,'amount':int(parent.buy_amount-counter.sell_amount)}
+                            tx_parent = {'platform':parent.buy_currency,'receiver_pk':parent.receiver_pk,'order_id':parent.id,'amount':int(counter.sell_amount)}
                             #print(tx_order['platform'])
                             #print(tx_order['receiver_pk'])
                             tx_counter = {'platform':counter.buy_currency,'receiver_pk':counter.receiver_pk,'order_id':counter.id,'amount': int(counter.buy_amount)}
