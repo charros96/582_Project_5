@@ -251,6 +251,7 @@ def execute_txes(txes):
     algo_tx_ids = send_tokens_algo(acl,algo_sk,algo_txes)
     eth_tx_ids = send_tokens_eth(w3,eth_sk,eth_txes)
     fields = ['platform','receiver_pk','order_id']
+    print(algo_tx_ids)
     for i,tx in algo_txes:
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = algo_tx_ids[i]
