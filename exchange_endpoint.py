@@ -179,6 +179,7 @@ def get_eth_keys(filename = "eth_mnemonic.txt"):
     return eth_sk, eth_pk
   
 def fill_order(order, txes=[]):
+    print("entering fill order")
     # TODO: 
     # Match orders (same as Exchange Server II)
     # Validate the order has a payment to back it (make sure the counterparty also made a payment)
@@ -194,9 +195,9 @@ def fill_order(order, txes=[]):
                         existing_order.filled = datetime.now()
                         order.filled = datetime.now()
                         existing_order.counterparty_id = order.id
-                        #existing_order.counterparty = order_obj
+                        
                         order.counterparty_id = existing_order.id
-                        #order_obj.counterparty = existing_order
+                        
                         tx_order = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount':order.buy_amount}
                         #print(tx_order['platform'])
                         #print(tx_order['receiver_pk'])
@@ -354,8 +355,9 @@ def trade():
                 
                 #execute_txes(txes2)
                 g.session.commit()
+                return jsonify(True)
         # 4. Execute the transactions
-        
+        return jsonify(True)
         # If all goes well, return jsonify(True). else return jsonify(False)
     return jsonify(True)
 
