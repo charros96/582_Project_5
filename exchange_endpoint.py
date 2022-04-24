@@ -89,6 +89,8 @@ def connect_to_blockchains():
         
 """ Helper Methods (skeleton code for you to implement) """
 def is_valid(order_obj):
+    if order_obj.creator_id != None:
+        return True
     platform = order_obj.sell_currency
     tx_id = order_obj.tx_id
     if platform == "Ethereum":
@@ -119,7 +121,7 @@ def is_valid(order_obj):
     return(False)
 
 def order_asdict(order):
-    return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount,'signature':order.signature, 'tx_id':order.tx_id}
+    return {'sender_pk': order.sender_pk,'receiver_pk': order.receiver_pk, 'buy_currency': order.buy_currency, 'sell_currency': order.sell_currency, 'buy_amount': order.buy_amount, 'sell_amount': order.sell_amount, 'tx_id':order.tx_id}
 
 def check_sig(payload,sig):
     
