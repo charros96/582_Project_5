@@ -181,46 +181,52 @@ def fill_order(order, txes=[]):
     fields = ['sender_pk','receiver_pk','buy_currency','sell_currency','buy_amount','sell_amount']
     
     unfilled_db = g.session.query(Order).filter(Order.filled == None).all()
-    for existing_order in unfilled_db:       
-        if existing_order.buy_currency == order.sell_currency:
-            if existing_order.sell_currency == order.buy_currency:
-                if (existing_order.sell_amount / existing_order.buy_amount) >= (order.buy_amount/order.sell_amount) :
+    for existing_order in unfilled_db:
+        if is_valid(existing_order):
+
+            if existing_order.buy_currency == order.sell_currency:
+                if existing_order.sell_currency == order.buy_currency:
+                    if (existing_order.sell_amount / existing_order.buy_amount) >= (order.buy_amount/order.sell_amount) :
                     
-                    existing_order.filled = datetime.now()
-                    order.filled = datetime.now()
-                    existing_order.counterparty_id = order.id
-                    #existing_order.counterparty = order_obj
-                    order.counterparty_id = existing_order.id
-                    #order_obj.counterparty = existing_order
-                    print(order.counterparty_id)
-                    print(existing_order.counterparty_id)
-                    g.session.commit()
-                    if (existing_order.buy_amount > order.sell_amount) | (order.buy_amount > existing_order.sell_amount) :
-                        if (existing_order.buy_amount > order.sell_amount):
-                            parent = existing_order
-                            counter = order
-                        if order.buy_amount > existing_order.sell_amount:
-                            parent = order
-                            counter = existing_order
-                        child = {}
-                        child['sender_pk'] = parent.sender_pk
-                        child['receiver_pk'] = parent.receiver_pk
-                        child['buy_currency'] = parent.buy_currency
-                        child['sell_currency'] = parent.sell_currency
-                        child['buy_amount'] = parent.buy_amount-counter.sell_amount
-                        child['sell_amount'] = (parent.buy_amount-counter.sell_amount)*(parent.sell_amount/parent.buy_amount)  
-                        child_obj = Order(**{f:child[f] for f in fields})
-                        child_obj.creator_id = parent.id
-                        g.session.add(child_obj)
-                        
+                        existing_order.filled = datetime.now()
+                        order.filled = datetime.now()
+                        existing_order.counterparty_id = order.id
+                        #existing_order.counterparty = order_obj
+                        order.counterparty_id = existing_order.id
+                        #order_obj.counterparty = existing_order
+                        tx_order = {'platform':order.sell_currency,'receiver_pk':order.sender_pk,'order_id':order.id}
+                        tx_xorder = {'platform':existing_order.sell_currency,'receiver_pk':existing_order.sender_pk,'order_id':existing_order.id}
+                        txes.append(tx_order)
+                        txes.append(tx_xorder)
+                        print(order.counterparty_id)
+                        print(existing_order.counterparty_id)
                         g.session.commit()
-                        break
+                        if (existing_order.buy_amount > order.sell_amount) | (order.buy_amount > existing_order.sell_amount) :
+                            if (existing_order.buy_amount > order.sell_amount):
+                                parent = existing_order
+                                counter = order
+                            if order.buy_amount > existing_order.sell_amount:
+                                parent = order
+                                counter = existing_order
+                            child = {}
+                            child['sender_pk'] = parent.sender_pk
+                            child['receiver_pk'] = parent.receiver_pk
+                            child['buy_currency'] = parent.buy_currency
+                            child['sell_currency'] = parent.sell_currency
+                            child['buy_amount'] = parent.buy_amount-counter.sell_amount
+                            child['sell_amount'] = (parent.buy_amount-counter.sell_amount)*(parent.sell_amount/parent.buy_amount)  
+                            child_obj = Order(**{f:child[f] for f in fields})
+                            child_obj.creator_id = parent.id
+                            g.session.add(child_obj)
+                        
+                            g.session.commit()
+                            break
                     
-                    break
+                        break
 
     g.session.commit()
     
-    pass
+    return txes
   
 def execute_txes(txes):
     if txes is None:
@@ -313,7 +319,8 @@ def trade():
         # 3a. Check if the order is backed by a transaction equal to the sell_amount (this is new)
             if is_valid(order_obj):
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
-                fill_order(order_obj)
+                txes = fill_order(order_obj)
+                execute_txes(txes)
                 g.session.commit()
         # 4. Execute the transactions
         
