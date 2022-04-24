@@ -202,6 +202,11 @@ def fill_order(order, txes=[]):
                         #print(tx_order['receiver_pk'])
                         tx_xorder = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':order.buy_amount}
                         #execute_txes([tx_order,tx_xorder])
+                        tx_fields = ['platform','receiver_pk','order_id']
+                        tx_obj = TX(**{f:tx_order[f] for f in tx_fields})
+                        tx_xobj = TX(**{f:tx_xorder[f] for f in tx_fields})
+                        g.session.add(tx_obj)
+                        g.session.add(tx_xobj)
                         #print(order.counterparty_id)
                         #print(existing_order.counterparty_id)
                         g.session.commit()
