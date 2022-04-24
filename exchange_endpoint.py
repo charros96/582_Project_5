@@ -221,10 +221,10 @@ def fill_order(order, txes=[]):
                             g.session.add(child_obj)
                         
                             g.session.commit()
-                            tx_parent = {'platform':parent.buy_currency,'receiver_pk':parent.receiver_pk,'order_id':parent.id,'amount':counter.sell_amount}
+                            tx_parent = {'platform':parent.buy_currency,'receiver_pk':parent.receiver_pk,'order_id':parent.id,'amount':int(counter.sell_amount)}
                             #print(tx_order['platform'])
                             #print(tx_order['receiver_pk'])
-                            tx_counter = {'platform':counter.buy_currency,'receiver_pk':counter.receiver_pk,'order_id':counter.id,'amount': counter.buy_amount}
+                            tx_counter = {'platform':counter.buy_currency,'receiver_pk':counter.receiver_pk,'order_id':counter.id,'amount': int(counter.buy_amount)}
                             algo_id, eth_id = execute_txes([tx_parent,tx_counter])
                             tx_fields = ['platform','receiver_pk','order_id']
                             tx_obj = TX(**{f:tx_parent[f] for f in tx_fields})
@@ -239,10 +239,10 @@ def fill_order(order, txes=[]):
                                 tx_xobj.tx_id = algo_id
                             g.session.commit()
                             break
-                        tx_parent = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount': order.buy_amount}
+                        tx_parent = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount': int(order.buy_amount)}
                         #print(tx_order['platform'])
                         #print(tx_order['receiver_pk'])
-                        tx_counter = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount': existing_order.buy_amount}
+                        tx_counter = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount': int(existing_order.buy_amount)}
                         algo_id, eth_id = execute_txes([tx_parent,tx_counter])
                         tx_fields = ['platform','receiver_pk','order_id']
                         tx_obj = TX(**{f:tx_parent[f] for f in tx_fields})
