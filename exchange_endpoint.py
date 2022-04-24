@@ -98,8 +98,8 @@ def is_valid(order_obj):
     platform = order_obj.sell_currency
     tx_id = order_obj.tx_id
     if platform == "Ethereum":
-        
-        tx = g.w3.eth.get_transaction(tx_id)
+        w3 = connect_to_eth()
+        tx = w3.eth.get_transaction(tx_id)
         #print('Eth tx:')
         #print(tx)
         if (tx.get("value") == order_obj.sell_amount):
@@ -108,7 +108,7 @@ def is_valid(order_obj):
                     return(True)
         pass
     elif platform == "Algorand":
-        g.icl = connect_to_algo(connection_type='indexer')
+        #icl = connect_to_algo(connection_type='indexer')
         #time.sleep(5)
         tx = g.icl.search_transactions(txid = tx_id).get('transactions')
         #print("algo tx:")
@@ -157,7 +157,7 @@ def log_message(message_dict):
     return
 
 def get_algo_keys():
-    g.acl = connect_to_algo()
+    
     # TODO: Generate or read (using the mnemonic secret) 
     # the algorand public/private keys
     mnemonic_secret = "dismiss silk all kitchen observe say sphere easy worry island boil faint guilt hobby cover torch they market beauty century satoshi party below abstract omit"
@@ -168,7 +168,7 @@ def get_algo_keys():
 
 
 def get_eth_keys(filename = "eth_mnemonic.txt"):
-    g.w3 = connect_to_eth()
+    
     g.w3.eth.account.enable_unaudited_hdwallet_features()
     acct = g.w3.eth.account.from_mnemonic("shed blouse blur immune fat produce around million jeans lobster priority fluid")
     eth_pk = acct._address
@@ -288,6 +288,7 @@ def execute_txes(txes):
   
 @app.route('/address', methods=['POST'])
 def address():
+    connect_to_blockchains()
     if request.method == "POST":
         content = request.get_json(silent=True)
         if 'platform' not in content.keys():
