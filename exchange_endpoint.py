@@ -222,15 +222,17 @@ def fill_order(order, txes=[]):
                         
                             g.session.commit()
                             tx_parent = {'platform':parent.buy_currency,'receiver_pk':parent.receiver_pk,'order_id':parent.id,'amount':int(counter.sell_amount)}
-                            #print(tx_order['platform'])
+                            print(tx_counter.platform,tx_parent.amount)
                             #print(tx_order['receiver_pk'])
                             tx_counter = {'platform':counter.buy_currency,'receiver_pk':counter.receiver_pk,'order_id':counter.id,'amount': int(counter.buy_amount)}
+                            print(tx_counter.platform,tx_counter.amount)
                             algo_id, eth_id = execute_txes([tx_parent,tx_counter])
                             tx_fields = ['platform','receiver_pk','order_id']
                             tx_obj = TX(**{f:tx_parent[f] for f in tx_fields})
                             tx_xobj = TX(**{f:tx_counter[f] for f in tx_fields})
                             g.session.add(tx_obj)
                             g.session.add(tx_xobj)
+                            
                             if tx_obj.platform=="Algorand":
                                 tx_obj.tx_id = algo_id
                                 tx_xobj.tx_id = eth_id
@@ -240,9 +242,10 @@ def fill_order(order, txes=[]):
                             g.session.commit()
                             break
                         tx_parent = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount': int(order.buy_amount)}
-                        #print(tx_order['platform'])
+                        print(tx_parent.platform,tx_parent.amount)
                         #print(tx_order['receiver_pk'])
                         tx_counter = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount': int(existing_order.buy_amount)}
+                        print(tx_counter.platform,tx_counter.amount)
                         algo_id, eth_id = execute_txes([tx_parent,tx_counter])
                         tx_fields = ['platform','receiver_pk','order_id']
                         tx_obj = TX(**{f:tx_parent[f] for f in tx_fields})
@@ -367,7 +370,7 @@ def trade():
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
                 
                 fill_order(order_obj)
-                print(tx.amount for tx in g.session.query(TX).all())
+                
                 #execute_txes(txes2)
                 g.session.commit()
                 return jsonify(True)
