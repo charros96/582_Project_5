@@ -194,12 +194,12 @@ def fill_order(order, txes=[]):
                         #existing_order.counterparty = order_obj
                         order.counterparty_id = existing_order.id
                         #order_obj.counterparty = existing_order
-                        tx_order = {'platform':order.sell_currency,'receiver_pk':order.sender_pk,'order_id':order.id}
-                        tx_xorder = {'platform':existing_order.sell_currency,'receiver_pk':existing_order.sender_pk,'order_id':existing_order.id}
+                        tx_order = {'platform':order.buy_currency,'receiver_pk':order.sender_pk,'order_id':order.id,'amount':order.buy_amount}
+                        tx_xorder = {'platform':existing_order.sell_currency,'receiver_pk':existing_order.sender_pk,'order_id':existing_order.id,'amount':order.buy_amount}
                         txes.append(tx_order)
                         txes.append(tx_xorder)
-                        print(order.counterparty_id)
-                        print(existing_order.counterparty_id)
+                        #print(order.counterparty_id)
+                        #print(existing_order.counterparty_id)
                         g.session.commit()
                         if (existing_order.buy_amount > order.sell_amount) | (order.buy_amount > existing_order.sell_amount) :
                             if (existing_order.buy_amount > order.sell_amount):
@@ -244,6 +244,25 @@ def execute_txes(txes):
 
     algo_txes = [tx for tx in txes if tx['platform'] == "Algorand" ]
     eth_txes = [tx for tx in txes if tx['platform'] == "Ethereum" ]
+
+    w3 = connect_to_eth()
+    acl = connect_to_algo()
+
+    algo_tx_ids = send_tokens_algo(acl,algo_sk,algo_txes)
+    eth_tx_ids = send_tokens_eth(w3,eth_sk,eth_txes)
+    fields = ['platform','receiver_pk','order_id']
+    for i,tx in algo_txes:
+        tx_obj = TX(**{f:tx[f] for f in fields})
+        tx_obj.tx_id = algo_tx_ids[i]
+        g.session.add(tx_obj)
+        g.session.commit()
+        
+
+    for i,tx in eth_txes:
+        tx_obj = TX(**{f:tx[f] for f in fields})
+        tx_obj.tx_id = eth_tx_ids[i]
+        g.session.add(tx_obj)
+        g.session.commit()
 
     # TODO: 
     #       1. Send tokens on the Algorand and eth testnets, appropriately
