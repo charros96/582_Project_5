@@ -206,7 +206,7 @@ def fill_order(order, txes=[]):
                         tx_fields = ['platform','receiver_pk','order_id']
                         tx_obj = TX(**{f:tx_order[f] for f in tx_fields})
                         tx_xobj = TX(**{f:tx_xorder[f] for f in tx_fields})
-                        if tx_obj['platform']=="Algorand":
+                        if tx_obj.platform=="Algorand":
                             tx_obj.tx_id = algo_id
                             tx_xobj.tx_id = eth_id
                         else:
