@@ -203,7 +203,7 @@ def fill_order(order, txes=[]):
                         #print(tx_order['platform'])
                         #print(tx_order['receiver_pk'])
                         tx_xorder = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':order.buy_amount}
-                        execute_txes[tx_order,tx_xorder]
+                        execute_txes([tx_order,tx_xorder])
                         #print(order.counterparty_id)
                         #print(existing_order.counterparty_id)
                         g.session.commit()
