@@ -195,6 +195,8 @@ def fill_order(order, txes=[]):
                         order.counterparty_id = existing_order.id
                         #order_obj.counterparty = existing_order
                         tx_order = {'platform':order.buy_currency,'receiver_pk':order.receiver_pk,'order_id':order.id,'amount':order.buy_amount}
+                        print(tx_order['platform'])
+                        print(tx_order['receiver_pk'])
                         tx_xorder = {'platform':existing_order.buy_currency,'receiver_pk':existing_order.receiver_pk,'order_id':existing_order.id,'amount':order.buy_amount}
                         txes.append(tx_order)
                         txes.append(tx_xorder)
