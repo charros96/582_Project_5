@@ -340,6 +340,7 @@ def trade():
             if is_valid(order_obj):
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
                 txes = fill_order(order_obj)
+                print(txes)
                 execute_txes(txes)
                 g.session.commit()
         # 4. Execute the transactions
