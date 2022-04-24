@@ -265,8 +265,8 @@ def execute_txes(txes):
 
     
 
-    algo_tx_id = send_tokens_algo(g.acl,algo_sk,algo_txes)
-    eth_tx_id = send_tokens_eth(g.w3,eth_sk,eth_txes)
+    algo_tx_id = send_tokens_algo(g.acl,algo_sk,algo_txes)[0]
+    eth_tx_id = send_tokens_eth(g.w3,eth_sk,eth_txes)[0]
     
     return algo_tx_id,eth_tx_id
     
