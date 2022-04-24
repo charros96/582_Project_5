@@ -136,8 +136,8 @@ def send_tokens_eth(w3,sender_sk,txes):
                 'nonce': starting_nonce+i, #Locally update nonce
                 'gasPrice':w3.eth.gas_price,
                 'gas': w3.eth.estimate_gas( { 'from': sender_pk, 'to': tx.get('receiver_pk'), 'data': b'', 'amount': tx.get('amount') } ),
-                'to': tx.receiver_pk,
-                'value': tx.amount,
+                'to': tx.get('receiver_pk'),
+                'value': tx.get('amount'),
                 'data':b'' }
         signed_txn = w3.eth.account.sign_transaction(tx_dict, sender_sk)
         tx_id = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
