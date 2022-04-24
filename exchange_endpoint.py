@@ -225,10 +225,10 @@ def fill_order(order, txes=[]):
                             break
                     
                         break
-
+    execute_txes(txes)                    
     g.session.commit()
     
-    return txes
+    pass
   
 def execute_txes(txes):
     if txes is None:
@@ -270,7 +270,7 @@ def execute_txes(txes):
         g.session.add(tx_obj)
         g.session.commit()
         i+1
-        
+
     # TODO: 
     #       1. Send tokens on the Algorand and eth testnets, appropriately
     #          We've provided the send_tokens_algo and send_tokens_eth skeleton methods in send_tokens.py
@@ -345,9 +345,9 @@ def trade():
         # 3a. Check if the order is backed by a transaction equal to the sell_amount (this is new)
             if is_valid(order_obj):
         # 3b. Fill the order (as in Exchange Server II) if the order is valid
-                txes = fill_order(order_obj)
-                print(txes)
-                execute_txes(txes)
+                fill_order(order_obj)
+                #print(txes)
+                
                 g.session.commit()
         # 4. Execute the transactions
         
