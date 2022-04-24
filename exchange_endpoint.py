@@ -263,6 +263,8 @@ def execute_txes(txes):
     print(eth_tx_ids)
 
     for i, tx in enumerate(algo_txes):
+        print(i)
+        print(tx)
         tx_obj = TX(**{f:tx[f] for f in fields})
         tx_obj.tx_id = algo_tx_ids[i]
         g.session.add(tx_obj)
